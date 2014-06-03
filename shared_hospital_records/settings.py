@@ -57,10 +57,10 @@ WSGI_APPLICATION = 'shared_hospital_records.wsgi.application'
 
 DATABASES = {
     'default':{
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.mysql',
         'NAME': 'master_facility_db',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
+        'USER': 'master',
+        'PASSWORD': 'master',
     },
     'slave1': {
         'ENGINE': 'django.db.backends.mysql',
@@ -75,8 +75,9 @@ DATABASES = {
         'PASSWORD': 'slave2',
     }
 }
+import db_router
 
-DATABASE_ROUTERS = [os.path.join(BASE_DIR, 'facility.MasterSlaveRouter')]
+DATABASE_ROUTERS = [db_router,]
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
