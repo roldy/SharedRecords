@@ -1,7 +1,7 @@
      Instantly Shared Hospital Records
 ========================
 
-Welcome to the Menu Orders application
+Welcome to the Instantly Shared Hospital Records
 
 Below you will find basic setup instructions for the ``Instantly Shared Hospital Records``
 project. To begin you should have the following applications installed on your
