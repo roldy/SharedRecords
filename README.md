@@ -11,6 +11,30 @@ local development system:
 - `pip >= 1.1 <http://www.pip-installer.org/>`_
 - `virtualenv >= 1.8 <http://www.virtualenv.org/>`_
 
+Required Packages to install
+----------------------------
+- `pip install         these packages one by one`_
+- ` django-grappelli==2.5.1`_
+- ` djangorestframework`_
+- ` markup`_
+- ` django-filter`_
+- ` pillow`_
+
+Dependencies required for db connections
+----------------------------------------
+- `pip install         these packages one by one`_
+- ` MySQL-python`_
+- ` python-psycopg2     This is used for the postgres db more on that later`_
+
+Installing superuser
+--------------------
+I have overridden the default User app and when creating 
+the super user, you will be prompted for additional information.
+for the sex. please input 'M' for male or 'F' for female
+'date of birth' format is YYYY-MM-DD
+'is_doctor' input 1 for True or 0 for false
+
+
 Getting Started
 ---------------
 
