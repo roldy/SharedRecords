@@ -36,6 +36,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'facility',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -144,3 +145,5 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.i18n',
     'django.core.context_processors.static',
 )
+
+AUTH_USER_MODEL = 'facility.Personnel'
