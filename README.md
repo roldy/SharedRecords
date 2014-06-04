@@ -30,9 +30,14 @@ Installing superuser
 --------------------
 I have overridden the default User app and when creating 
 the super user, you will be prompted for additional information.
-for the sex. please input 'M' for male or 'F' for female
-'date of birth' format is YYYY-MM-DD
-'is_doctor' input 1 for True or 0 for false
+for the
+
+		  sex. please input 'M' for male or 'F' for female
+
+		'date of birth' format is YYYY-MM-DD		 
+
+		'is_doctor' input 1 for True or 0 for false
+
 
 
 Getting Started
