@@ -1,3 +1,4 @@
+import random
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 
@@ -26,6 +27,10 @@ class Facility(models.Model):
 
 	class Meta:
 		verbose_name_plural = "Facilities"
+
+	def save(self, *args, **kwargs):
+		self.name = self.name.lower()
+		super(Facility, self).save(*args, **kwargs)
 
 
 class MyPersonnelManager(BaseUserManager):
@@ -82,8 +87,8 @@ class Personnel(AbstractBaseUser):
 	
 	first_name = models.CharField(max_length=50)
 	last_name = models.CharField(max_length=50)
-	sex = models.CharField(max_length=1, choices=SEX, unique=True)
-	date_of_birth = models.DateField()
+	sex = models.CharField(max_length=1, choices=SEX)
+	date_of_birth = models.DateField(help_text='Please use the following format: <em>YYYY-MM-DD</em>')
 	address = models.CharField(max_length=50)
 	email = models.EmailField(
 		verbose_name=u'email address',
@@ -99,13 +104,19 @@ class Personnel(AbstractBaseUser):
 	USERNAME_FIELD = 'email'
 	REQUIRED_FIELDS = ['first_name', 'last_name', 'sex', 'date_of_birth',
 	 'address', 'qualification', 'is_doctor']
+
+	def _get_full_name(self):
+		"Returns personnel's full name"
+		return '%s, %s' % (self.first_name, self.last_name)
+	full_name = property(_get_full_name)
+
 	def get_full_name(self):
-		# The user is identified by their email
-		return self.email
+		# The user is identified by their full name
+		return self.full_name
 
 	def get_short_name(self):
-		# The user is identified by their email
-		return self.email
+		# The user is identified by their first name
+		return self.first_name
 
 	def has_perm(self, perm, obj=None):
 		"Does the user have specific permissions"
@@ -123,11 +134,6 @@ class Personnel(AbstractBaseUser):
 		# Simplest possible answer: All admins are staff
 		return self.is_admin
 
-	def _get_full_name(self):
-		"Returns personnel's full name"
-		return '%s, %s' % (self.first_name, self.last_name)
-	full_name = property(_get_full_name)
-
 	class Meta:
 		verbose_name_plural = "Personnel"
 
@@ -139,24 +145,24 @@ class Condition(models.Model):
 	symptoms = models.TextField()
 	diagnosis = models.TextField()
 	prescription = models.TextField()
-	vistation_date = models.DateField()
-	next_visit = models.DateField()
-	medical_personnel = models.ManyToManyField(Personnel)
+	condition_doctors = models.ManyToManyField(Personnel, limit_choices_to={'is_doctor': True})
 
 	def __unicode__(self):
 		return self.condition_name
 
 class Patient(models.Model):
-
+	identifier = models.CharField(unique=True, max_length=255)
 	first_name = models.CharField(max_length=50)
 	last_name = models.CharField(max_length=50)
-	sex = models.CharField(max_length=1, choices=SEX, unique=True)
+	sex = models.CharField(max_length=1, choices=SEX)
 	date_of_birth = models.DateField()
 	address = models.CharField(max_length=50)
 	contact = models.CharField(max_length=50)
 	next_of_kin = models.CharField(max_length=50)
 	conditions = models.ManyToManyField(Condition)
 	facility_registered_from = models.ForeignKey(Facility)
+	vistation_date = models.DateField()
+	next_visit = models.DateField()
 
 	def _get_full_name(self):
 		"Returns personnel's full name"
@@ -165,3 +171,10 @@ class Patient(models.Model):
 
 	def __unicode__(self):
 		return self.full_name
+
+	def save(self, *args, **kwargs):
+		if self.facility_registered_from:
+			first_three_facility_letters=self.facility_registered_from.name
+			self.identifier = first_three_facility_letters.strip()[:3].upper()+"-"+str(random.randrange(1, 999, 3))+\
+			"-"+str(random.randrange(1, 999, 3))
+			super(Patient, self).save(*args, **kwargs)

@@ -85,13 +85,34 @@ class PersonnelAdmin(UserAdmin):
 	filter_horizontal = ()
 
 
+class FacilityAdmin(admin.ModelAdmin):
+	list_display = ('name', 'facility_head', 'district', 'website')
+	list_filter = ('district',)
+	search_fields = ('name',)
+	ordering = ('name',)
 
 
+class ConditionAdmin(admin.ModelAdmin):
+	list_display = ('condition_name', 'symptoms', 'prescription')
+	list_filter = ('condition_name',)
+	search_fields = ('condition_name',)
+	ordering = ('condition_name',)
 
-admin.site.register(Facility)
+
+class PatientAdmin(admin.ModelAdmin):
+	list_display = ('full_name', 'sex', 'address', 'identifier', 'vistation_date', 'next_visit')
+	fieldsets = (
+		(None, {'fields': ('facility_registered_from', 'conditions')}),
+		('Personal info', {'fields': ('first_name', 'last_name', 'sex', 'date_of_birth')}),
+		('Conatacts', {'fields':('address', 'contact', 'next_of_kin',)}),
+		('Visitation', {'fields':('vistation_date', 'next_visit')}),
+	)
+
+
+admin.site.register(Facility, FacilityAdmin)
 admin.site.register(Personnel, PersonnelAdmin)
-admin.site.register(Condition)
-admin.site.register(Patient)
+admin.site.register(Condition, ConditionAdmin)
+admin.site.register(Patient, PatientAdmin)
 
 # unregister the Group model from admin.
 admin.site.unregister(Group)
