@@ -1,6 +1,7 @@
 from .models import Facility, Personnel, Patient, Condition
 from rest_framework import serializers
-
+from rest_framework import renderers
+from rest_framework.decorators import link
 
 
 class FacilitySerializer(serializers.ModelSerializer):
@@ -23,6 +24,7 @@ class PersonnelSerializer(serializers.ModelSerializer):
 		model = Personnel
 		feilds = ('email', 'first_name', 'last_name', 'sex', 'date_of_birth',
 		 'address', 'qualification', 'is_doctor', 'is_admin')
+		exclude = ('password', 'last_login', 'date_of_birth', 'is_admin', 'is_active')
 
 class ConditionSerializer(serializers.HyperlinkedModelSerializer):
 	""" 
@@ -33,7 +35,13 @@ class ConditionSerializer(serializers.HyperlinkedModelSerializer):
 	condition_doctors = PersonnelSerializer(many=True)
 	class Meta:
 		model = Condition
-		feilds = ('condition_name', 'symptoms', 'diagnosis', 'prescription', 'condition_doctors')
+		feilds = ('condition_name', 'symptoms', 'diagnosis', 'prescription',
+		 			'condition_doctors')
+
+	@link(renderer_classes=[renderers.StaticHTMLRenderer])
+	def highlight(self, request, *args, **kwargs):
+		condition = self.get_object()
+		return Response(condition.highlighted)
 
 class PatientSerializer(serializers.HyperlinkedModelSerializer):
 
@@ -46,4 +54,6 @@ class PatientSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = Patient
 		feilds = ('identifier', 'first_name', 'last_name', 'sex', 'date_of_birth',
-		 'address', 'contact', 'next_of_kin', 'conditions', 'facility_registered_from', 'visitation_date', 'next_visit')
+		 'address', 'contact', 'next_of_kin', 'conditions', 'facility_registered_from',
+		 	 'visitation_date', 'next_visit')
+		exclude = ('url',)
