@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        {% load staticfiles %}
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame
+        Remove this if you use the .htaccess -->
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+        <!-- Bootstrap -->
+        <link rel="stylesheet" type="text/css" href="{% static 'facility/dist/css/bootstrap-flaty.css' %}" />
+        <link rel="stylesheet" type="text/css" href="{% static 'facility/dist/css/signin.css' %}" />
+        <link rel="stylesheet" type="text/css" href="{% static 'facility/dist/css/sticky-footer.css' %}" />
+
+        <script src="{% static 'facility/dist/js/jquery.min.js' %}"></script>
+
+        <title>{% block title%}{% endblock%}</title>
+        <meta name="description" content="" />
+        <meta name="author" content="HARRY" />
+        <!-- Replace favicon.ico & apple-touch-icon.png in the root of your domain and delete these references -->
+       <link rel="shortcut icon" href="{% static 'facility/dist/img/favicon.ico' %}" />
+        <!-- <link rel="apple-touch-icon" href="/apple-touch-icon.png" /> -->
+    </head>
+
+    <body>
+          <!-- Wrap all page content here -->
+    <div id="wrap">
+        <p>    
+        {% block content %} {% endblock %}
+    </div>
+        {% block footer %}
+            <div id="footer" class="navbar-fixed-bottom">
+                <div class="container">                    
+                    <p class="text-muted credit">
+                        <span class="">
+                           <a href="/admin" id="admin-link" target="_blank">Admin</a>
+                        </span>
+                       &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                       <small class=" pull-right">&copy; Developed by <a href="https://github.com/roldy" target="_blank">Roldy</a></small>
+                </div>
+            </div>
+        {% endblock %}
+        <script src="{% static 'facility/dist/js/bootstrap.js' %}"></script>
+        <script src="{% static 'facility/dist/js/bootstrap.min.js' %}"></script>
+    </body>
+</html>
