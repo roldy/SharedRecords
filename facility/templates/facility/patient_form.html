@@ -1,0 +1,7 @@
+<form enctype="multipart/form-data"  action="{% url 'facility:home' user.id  %}" method="post"  class="form-horizontal home-form" role="form">
+<h1 class="page-header">Create Patient</h1>
+        {% csrf_token %}
+        {{ form.as_p }}
+    <button type="submit" class="btn btn-lg btn-primary btn-block">Create Patient</button>
+
+</form> 

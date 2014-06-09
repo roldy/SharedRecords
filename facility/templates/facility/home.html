@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{%block title%} 
+	{% if user.full_name %}
+		{{user.full_name }} | Shared Medical Records
+	{% else %}
+		Shared Medical Records
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+  <div class="container">
+	    <div class="navbar-header">
+	      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+	        <span class="sr-only">Toggle navigation</span>
+	        <span class="icon-bar"></span>
+	        <span class="icon-bar"></span>
+	        <span class="icon-bar"></span>
+	      </button>
+	      <a class="navbar-brand" href="/">Medical Book</a>
+	    </div>
+	    <div class="collapse navbar-collapse">
+	      <ul class="nav navbar-nav">
+	        <li class="active"><a href="#">Home</a></li>
+	        <li><a href="#about">About</a></li>
+	    
+	      </ul>
+	      <ul class="nav navbar-nav navbar-right">
+	      	<li><a href="#">Welcome {{user.full_name}}</a></li>
+            <li><a href="{% url 'facility:logout_user' %}">Log out</a></li>
+          </ul>
+		<form class="navbar-form navbar-right" id="search-form" role="search" method="get" action="{% url 'facility:search' %}">
+			<div class="form-group">
+			{{ search_form }}
+			</div>
+		<button type="submit" class="btn btn-primary" ><span class="glyphicon glyphicon-search"></span></button>
+		</form>
+	    </div><!--/.nav-collapse -->
+  </div>
+</div>
+
+
+<div class="container-fluid">
+	<div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+          <ul class="nav nav-sidebar">
+            <li class="active"><a href="#">Overview</a></li>
+            <li><a href="#">Reports</a></li>
+            <li><a href="#">Analytics</a></li>
+            <li><a href="#">Export</a></li>
+          </ul>
+          <ul class="nav nav-sidebar">
+            <li><a href="">Nav item</a></li>
+            <li><a href="">Nav item again</a></li>
+            <li><a href="">One more nav</a></li>
+            <li><a href="">Another nav item</a></li>
+            <li><a href="">More navigation</a></li>
+          </ul>
+          <ul class="nav nav-sidebar">
+            <li><a href="">Nav item again</a></li>
+            <li><a href="">One more nav</a></li>
+            <li><a href="">Another nav item</a></li>
+          </ul>
+      	</div>
+      	<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+			{%if messages %}
+				<div class="alert alert-success alert-dismissable">
+					<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+					<ul>
+						{% for message in messages %}
+						<li><strong><center><span class="glyphicon glyphicon-info-sign"></span> {{ message }}</center></strong></li>
+						{% endfor %}
+					</ul>
+				</div>
+			{% endif %}
+
+			{% if found_patient %}
+				{% include 'facility/search.html' %}
+			{% elif form %}
+				{% include 'facility/patient_form.html' %}
+			{% endif %}
+	    </div>
+	</div>
+</div>
+
+
+{% endblock %}
