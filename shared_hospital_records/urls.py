@@ -18,6 +18,7 @@ admin.autodiscover()
 urlpatterns = patterns('',
 	url(r'^', include('facility.urls', namespace='facility')),
     url(r'^api/', include(router.urls)),
+    url(r'^api/patient/detail/(?P<identifier>[^/]+)/$', views.PatientDetail.as_view()),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')), # rest_framework URLS
     url(r'^admin/', include(admin.site.urls)),
 )

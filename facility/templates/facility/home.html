@@ -77,6 +77,8 @@
 
 			{% if found_patient %}
 				{% include 'facility/search.html' %}
+			{% elif patient_obj%}
+				{% include 'facility/alternate_patient_result.html' %}
 			{% elif form %}
 				{% include 'facility/patient_form.html' %}
 			{% endif %}

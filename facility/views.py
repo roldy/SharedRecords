@@ -1,8 +1,15 @@
+import requests
+from requests.exceptions import ConnectionError, HTTPError, Timeout
 from facility.serializers import FacilitySerializer, PersonnelSerializer, ConditionSerializer, PatientSerializer
 from rest_framework import permissions
 from rest_framework import viewsets
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.parsers import JSONParser
+from rest_framework.compat import BytesIO
 
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import HttpResponse, HttpResponseRedirect, Http404, HttpRequest
 from django.template import Context, RequestContext, loader 
 from django.shortcuts import render, render_to_response, get_object_or_404
 from django.contrib import messages
@@ -30,9 +37,37 @@ class PatientViewSet(viewsets.ModelViewSet):
 	queryset = Patient.objects.all()
 	serializer_class = PatientSerializer
 
+class PatientDetail(APIView):
+	"""
+	Retrive, update or delete Patient instance
+	"""
+	def get_object(self, identifier):
+		try:
+			return Patient.objects.get(identifier=identifier)
+		except Patient.DoesNotExist:
+			raise Http404
 
+	def get(self, request, identifier, format=None):
+		patient = self.get_object(identifier)
+		serializer = PatientSerializer(patient)
+		return Response(serializer.data)
+
+	def put(self, request, identifier, format=None):
+		patient = self.get_object(identifier)
+		serializer = PatientSerializer(patient, data=request.DATA)
+		if serializer.is_valid():
+			serializer.save()
+			return Response(serializer.data)
+		return Response(serializer.errors, status=status.HTTP_404_BAD_REQUEST)
+
+	def delete(self, request, identifier, format=None):
+		patient=self.get_object(identifier)
+		patient.delete()
+		return Response(status=status.HTTP_202_NO_CONTENT)
+		
 
 search_form = SearchForm()
+
 def index(request):
 	if request.user.is_authenticated():
 			return HttpResponseRedirect(reverse('facility:home',  args=(request.user.id,)))
@@ -72,28 +107,55 @@ def home(request, user_id):
 			else:
 				return render(request, 'facility/home.html',
 					 {'user':request.user, 'form': form, 'error_message':'Sorry the user already exists'})
-
 	else:
 		form = PatientForm()
 	return render(request, 'facility/home.html', {'user': request.user, 'form':form, 'search_form': search_form})
 
-
-
 def search_page(request):
     show_results = False
     form = PatientForm()
+    search_form = SearchForm()
     patient=None
+    patient_obj=None
     if request.GET.has_key('query'):
         show_results = True
-        query = request.GET['query']
+        query = request.GET['query'].strip().upper()
         if query:
-            form = SearchForm({'query' : query})
+            search_form = SearchForm({'query' : query})
             patient = \
             Patient.objects.filter(identifier__iexact=query)
+            if list(patient) == []:
+            	patient_obj=_get_patient_data_from_alternate_facility(query)
+
     variables = RequestContext(request, { 'search_form': search_form,
         'found_patient': patient,
+        'patient_obj': patient_obj,
         'show_results': show_results,
         'form': form
     })
     return render_to_response('facility/home.html', variables)
 
+def _get_patient_data_from_alternate_facility(query):
+	r = None
+	urls = {'MBA':'http://127.0.0.1:8080/api/patient/detail/', 'MUL':'http://127.0.0.1:8001/api/patient/detail/'}
+	key = query.strip()[:3].upper()
+	if urls.has_key(key):
+		url = urls[key]
+		url=url+query
+		try:
+			r = requests.get(url)
+		except (ConnectionError, HTTPError, Timeout), e:
+			print e
+		if r:
+			stream = BytesIO(r.text)
+			try:
+				data = JSONParser().parse(stream)
+			except Exception, e:
+				raise e
+			serializer = PatientSerializer(data=data)
+			if serializer.is_valid():
+				return serializer.object
+		
+
+		
+	

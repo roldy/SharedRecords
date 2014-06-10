@@ -49,7 +49,7 @@ class PatientSerializer(serializers.HyperlinkedModelSerializer):
 	This class gets data from the Patient Model
 	and prepares it for serialization
 	"""
-
+	facility_registered_from = serializers.Field(source='facility_registered_from.name')
 	conditions = ConditionSerializer(many=True)
 	class Meta:
 		model = Patient
