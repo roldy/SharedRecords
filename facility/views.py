@@ -96,6 +96,7 @@ def logout_user(request):
 	logout(request)
 	return HttpResponseRedirect(reverse('facility:index'))
 
+@login_required(login_url='/')
 def home(request, user_id):
 	if request.method=='POST':
 		form = PatientForm(request.POST)
@@ -111,6 +112,7 @@ def home(request, user_id):
 		form = PatientForm()
 	return render(request, 'facility/home.html', {'user': request.user, 'form':form, 'search_form': search_form})
 
+@login_required(login_url='/')
 def search_page(request):
     show_results = False
     form = PatientForm()
@@ -126,7 +128,9 @@ def search_page(request):
             Patient.objects.filter(identifier__iexact=query)
             if list(patient) == []:
             	patient_obj=_get_patient_data_from_alternate_facility(query)
-
+            	form = PatientForm(instance=patient_obj)
+            	form.fields["facility_registered_from"]=patient_obj.facility_registered_from
+            	# form.fields["conditions"]=patient_obj.conditions
     variables = RequestContext(request, { 'search_form': search_form,
         'found_patient': patient,
         'patient_obj': patient_obj,
@@ -155,7 +159,24 @@ def _get_patient_data_from_alternate_facility(query):
 			serializer = PatientSerializer(data=data)
 			if serializer.is_valid():
 				return serializer.object
-		
+
+@login_required(login_url='/')
+def update_patient_data(request, patient_id):
+	patient = get_object_or_404(Patient, pk=patient_id)
+	if request.method=='POST':
+		form = PatientForm(request.POST)
+		if form.is_valid():
+			form.save()
+			if form.save():
+				messages.info(request, 'The patient information was successfully updated')
+				return HttpResponseRedirect(reverse('facility:home', args=(request.user.id,)))
+			else:
+				return render(request, 'facility/home.html',
+					 {'user':request.user, 'form': form, 
+					 'error_message':'Please check the patient information and try again'})
+	else:
+		form = PatientForm(instance=patient)
+	return render(request, 'facility/home.html', {'user': request.user, 'form':form, 'search_form': search_form})
 
 		
 	

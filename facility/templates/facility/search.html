@@ -1,6 +1,6 @@
 <h1 class="page-header">Patient Found</h1>
 {% for patient in found_patient%}
 
-	<h3><a href="#"> {{ patient.full_name }}</a></h3>
+	<h3><a href="{% url 'facility:update' patient.id %}"> {{ patient.full_name }}</a></h3>
 
 {% endfor %}
