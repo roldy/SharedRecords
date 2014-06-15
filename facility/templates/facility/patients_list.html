@@ -1,0 +1,49 @@
+<div class="panel panel-default panel-info details-render" >
+ <div class="panel-heading"><h1><center>Patients</center></h1></div>
+ <div class="panel-body">
+
+
+<div class="table-responsive">
+  <table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+          <th>Full name</th>
+          <th>Identifier</th>
+          <th>Address</th>
+          <th>Visitation date</th>
+          <th>Next Visit</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for patient in patients_list %}
+      	<tr>
+      		<td><a href="{% url 'facility:details' patient.pk %}">{{patient.full_name}}</a></td>
+      		<td><code>{{patient.identifier}}</code></td>
+      		<td>{{patient.address}}</td>
+      		<td>{{patient.vistation_date}}</td>
+      		<td>{{patient.next_visit}}</td>
+      	</tr>
+      {% empty %}
+
+      </tbody>
+
+  </table>
+</div>
+	<p>No Patients were listed</p>
+	{% endfor %}
+
+	<ul class="pager">
+		{% if patients_list.has_previous %}
+			<li class="previous"><a href="?page={{patients_list.previous_page_number}}">&larr;previous</a></li>
+		{% endif %}
+		<span class="current">
+			Page {{patients_list.number}} of {{ patients_list.paginator.num_pages }}
+		</span>
+		{% if patients_list.has_next %}
+			<li class="next"><a href="?page={{patients_list.next_page_number}}">next &rarr;</a></li>
+		{% endif %}
+
+	</ul>
+
+</div>
+</div>

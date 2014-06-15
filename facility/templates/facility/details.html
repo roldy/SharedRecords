@@ -1,0 +1,84 @@
+<div class="panel panel-default panel-info details-render" >
+  <!-- Default panel contents -->
+  <div class="panel-heading"><h1><center>Patient details</center></h1></div>
+  <div class="panel-body">
+  <div  class="table-responsive">
+  	<table class="table table-bordered table-striped">
+  		<tbody>
+        <tr>
+          <th>Identifier</th>
+          <td><code>{{patient_details.identifier}}</code></td>
+        </tr>
+        <tr>
+          <th>Full name</th>
+          <td><a href="{% url 'facility:update' patient_details.id %}">{{patient_details.full_name}}</a></td>
+        </tr>
+        <tr>
+          <th>First name</th>
+          <td>{{patient_details.first_name}}</td>
+          
+        </tr>
+        <tr>
+          <th>Last name</th>
+          <td>{{patient_details.last_name}}</td>
+        </tr>
+        <tr>
+          <th>Sex</th>
+          <td>{{patient_details.sex}}</td>
+        </tr>
+        <tr>
+          <th>Date of birth</th>
+          <td>{{patient_details.date_of_birth}}</td>
+        </tr>
+        <tr>
+          <th>Address</th>
+          <td>{{patient_details.address}}</td>
+        </tr>
+        <tr>
+          <th>Contact</th>
+          <td>{{patient_details.contact}}</td>
+        </tr>
+        <tr>
+          <th>Next of kin</th>
+          <td>{{patient_details.next_of_kin}}</td>
+        </tr>
+        <tr>
+          <th>Registered Facility</th>
+          <td>{{patient_details.facility_registered_from}}</td>
+        </tr>
+        <tr>
+          <th>Conditions</th>
+          <td><a href="#patientConditionModal" data-toggle="modal">conditions</a></td>
+        </tr>
+        <tr>
+          <th>Visitation date</th>
+          <td>{{patient_details.vistation_date}}</td>
+        </tr>
+        <tr>
+          <th>Next visit</th>
+          <td>{{patient_details.next_visit}}</td>
+        </tr>
+      </tbody>
+  	</table>
+  </div>	
+  </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" id="patientConditionModal">
+	  <div class="modal-dialog modal-sm">
+	  <div class="modal-content">
+	  	<div class="modal-header">
+	    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+	    <h4 class="modal-title" id="myModalLabel">{{patient_details.full_name|capfirst}}'s Condition(s)</h4>
+	  </div>
+	  <div class="message"></div>
+	  <div class="modal-body">
+	  	    <ul>
+     		 {% for condition in patient_details.conditions.all %}
+          	<li>{{condition|capfirst}}</li>
+          	{% endfor%}
+        </ul>
+	  </div>
+    </div>
+  </div>
+</div>
