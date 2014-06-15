@@ -13,7 +13,7 @@ class Facility(models.Model):
 	"""
 	 This class defines the details about a health facility
 	"""	
-	name = models.CharField(max_length=50, unique=True)
+	name = models.CharField(max_length=50, primary_key=True)
 	address = models.CharField(max_length=50)
 	district = models.CharField(max_length=50)
 	town = models.CharField(max_length=50)
@@ -141,7 +141,7 @@ class Personnel(AbstractBaseUser):
 		return self.email
 
 class Condition(models.Model):
-	condition_name = models.CharField(max_length=80)
+	condition_name = models.CharField(max_length=80, primary_key=True)
 	symptoms = models.TextField()
 	diagnosis = models.TextField()
 	prescription = models.TextField()
@@ -166,7 +166,7 @@ class Patient(models.Model):
 
 	def _get_full_name(self):
 		"Returns personnel's full name"
-		return '%s, %s' % (self.first_name, self.last_name)
+		return '%s %s' % (self.first_name, self.last_name)
 	full_name = property(_get_full_name)
 
 	def __unicode__(self):
@@ -177,4 +177,4 @@ class Patient(models.Model):
 			first_three_facility_letters=self.facility_registered_from.name
 			self.identifier = first_three_facility_letters.strip()[:3].upper()+"-"+str(random.randrange(1, 999, 3))+\
 			"-"+str(random.randrange(1, 999, 3))
-			super(Patient, self).save(*args, **kwargs)
+		super(Patient, self).save(*args, **kwargs)

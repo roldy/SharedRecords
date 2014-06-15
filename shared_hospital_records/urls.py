@@ -1,6 +1,7 @@
 from django.conf.urls import patterns, include, url
 
 from rest_framework import routers
+from rest_framework.urlpatterns import format_suffix_patterns
 from facility import views
 
 
@@ -22,3 +23,4 @@ urlpatterns = patterns('',
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')), # rest_framework URLS
     url(r'^admin/', include(admin.site.urls)),
 )
+

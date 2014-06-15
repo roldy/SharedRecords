@@ -51,8 +51,8 @@
             <li><a href="#">Export</a></li>
           </ul>
           <ul class="nav nav-sidebar">
-            <li><a href="">Nav item</a></li>
-            <li><a href="">Nav item again</a></li>
+            <li><a href="#addConditionModal" data-toggle="modal">Add Condition</a></li>
+            <li><a href="{% url 'facility:add_patient' %}">Add new patient</a></li>
             <li><a href="">One more nav</a></li>
             <li><a href="">Another nav item</a></li>
             <li><a href="">More navigation</a></li>
@@ -65,22 +65,77 @@
       	</div>
       	<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
 			{%if messages %}
-				<div class="alert alert-success alert-dismissable">
-					<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+				{% for message in messages %}
+					{% if message.tags == 'info' %}
+					<div class="alert alert-success alert-dismissable">
+					<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
 					<ul>
-						{% for message in messages %}
-						<li><strong><center><span class="glyphicon glyphicon-info-sign"></span> {{ message }}</center></strong></li>
-						{% endfor %}
+				<li><strong><center><span class="glyphicon glyphicon-info-sign"></span> {{ message }}</center></strong></li>
 					</ul>
-				</div>
+					</div>
+					{% elif message.tags == 'error' %}
+						<div class="alert alert-danger alert-dissmissable">
+						<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+						<ul>
+						<li><strong><center><span class="glyphicon glyphicon-info-sign"></span> {{ message }}</center></strong></li>
+						</ul>
+						</div>
+					{% endif %}
+				{% endfor %}
+					
 			{% endif %}
+
 
 			{% if found_patient %}
 				{% include 'facility/search.html' %}
-			
+			{% elif patient_obj %}
+				{% include 'facility/alternate_patient_result.html' %}
+			{% elif patients_list %}
+				{% include 'facility/patients_list.html' %}
+			{% elif form and condition_form %}
+				{% include 'facility/patient_form.html' %}
 			{% elif form %}
 				{% include 'facility/patient_form.html' %}
+			{% elif update_form%}
+				{% include 'facility/patient_form.html' %}
+			{% elif patient_details%}
+				{% include 'facility/details.html'%}
 			{% endif %}
+
+
+
+			<!-- Modal -->
+			<div class="modal fade" id="addConditionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			  <div class="modal-dialog">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+			        <h4 class="modal-title" id="myModalLabel">Add Medical Condition</h4>
+			      </div>
+			      <div class="message"></div>
+			      <div class="modal-body" id="conditionDiv">
+			        <form action="{% url 'facility:condition' %}" method="post"  class="form-horizontal home-form" role="form" id="conditionForm">
+				        {% csrf_token %}
+				        {{ condition_form.as_p }}
+					
+						<div id="loading" style="display:none;">
+						    <span id="load_text">loading...</span>
+						</div>
+						<div id="form_ajax" style="display:none;">
+						    <span>Condition was successfully added.</span>
+						</div>
+						<div id="form_ajax_error" style="display:none;">
+						    <span>Can not submit data due to errors.</span>
+						</div>
+			      </div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			        <button type="submit" class="btn btn-primary">Save Condition</button>
+			        </form> 
+			      </div>
+			    </div>
+			  </div>
+			</div>
 	    </div>
 	</div>
 </div>

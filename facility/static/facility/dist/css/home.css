@@ -1,7 +1,16 @@
 .home-form {
-	max-width: 430px;
+	max-width: 530px;
 	margin: 0 auto;
 	padding-top: 40px;
+}
+
+li{
+  list-style-type: none;
+}
+
+.details-render{
+  max-width: 830px;
+  margin: 0 auto;
 }
 
 #id_sex{

@@ -1,7 +1,7 @@
 from django.forms import ModelForm
 from django import forms
 
-from facility.models import Patient
+from facility.models import Patient, Condition
 
 class PatientForm(ModelForm):
 	class Meta:
@@ -22,6 +22,15 @@ class PatientForm(ModelForm):
 		for field in self.fields:
 			self.fields[field].widget.attrs.update({'class':'form-control input-sm'})
 
+
+class ConditionForm(ModelForm):
+	class Meta:
+		model = Condition
+
+	def __init__(self, *args, **kwargs):
+		super(ConditionForm, self).__init__(*args, **kwargs)
+		for field in self.fields:
+			self.fields[field].widget.attrs.update({'class':'form-control input-sm'})
 
 
 class SearchForm(forms.Form):

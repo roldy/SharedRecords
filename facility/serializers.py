@@ -31,7 +31,7 @@ class ConditionSerializer(serializers.HyperlinkedModelSerializer):
 	This class gets data from the Condtion Model
 	and prepares it for serialization
 	"""
-
+	condition_name = serializers.Field(source='condition_name')
 	condition_doctors = PersonnelSerializer(many=True)
 	class Meta:
 		model = Condition

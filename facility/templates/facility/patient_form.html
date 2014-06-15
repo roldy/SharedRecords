@@ -1,7 +1,15 @@
-<form enctype="multipart/form-data"  action="{% url 'facility:home' user.id  %}" method="post"  class="form-horizontal home-form" role="form">
-<h1 class="page-header">Create Patient</h1>
-        {% csrf_token %}
-        {{ form.as_p }}
-    <button type="submit" class="btn btn-lg btn-primary btn-block">Create Patient</button>
-
-</form> 
+<div class="panel panel-warning details-render" >
+	<div class="panel-heading"><center>{% if form %}<h3>Create Patient</h3>{% elif update_form%}<h3>Update Patient</h3>{% endif %}</center></div>
+	<div class="panel-body">
+		<form enctype="multipart/form-data"  {% if form %} action="{% url 'facility:add_patient' %}" {% elif update_form %}  action="{% url 'facility:update' patient_id %}" {% endif %} method="post"  class="form-horizontal home-form" role="form">
+		        {% csrf_token %}
+		        {% if form %}
+		        	{{ form.as_p }}
+		        {% elif update_form%}
+		        	{{ update_form.as_p }}
+		        {% endif %}
+		        <p>
+		    <button type="submit" class="btn btn-lg btn-primary btn-block">{% if form %}Create Patient {% elif update_form%} Update Patient {% endif %}</button> </p>
+		</form> 
+	</div>
+</div>
