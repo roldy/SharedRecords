@@ -1,13 +1,14 @@
 import requests
 import json
 from requests.exceptions import ConnectionError, HTTPError, Timeout
-from facility.serializers import FacilitySerializer, PersonnelSerializer, ConditionSerializer, PatientSerializer
+from facility.serializers import FacilitySerializer, PersonnelSerializer, ConditionSerializer, PatientSerializer, OtherConditionSerializer
 from rest_framework import permissions
 from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.parsers import JSONParser
+from rest_framework.renderers import JSONRenderer
 from rest_framework.compat import BytesIO
 
 from django.http import HttpResponse, HttpResponseRedirect, Http404, HttpRequest, HttpResponseBadRequest
@@ -21,7 +22,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from .models import Facility, Personnel, Patient, Condition
-from .forms import PatientForm, SearchForm, ConditionForm
+from .forms import PatientForm, SearchForm, ConditionForm, OtherConditionForm
 
 class FacilityViewSet(viewsets.ModelViewSet):
 	queryset = Facility.objects.all()
@@ -66,7 +67,30 @@ class PatientDetail(APIView):
 		patient=self.get_object(identifier)
 		patient.delete()
 		return Response(status=status.HTTP_202_NO_CONTENT)
-		
+	
+class OtherConditionList(APIView):
+	"""
+	Retrive, update or delete other patient's conditions based on 
+	Patient instance
+	"""
+	def get_objects(self, pk):
+		try:
+			return OtherCondition.objects.filter(patient__pk=pk)
+		except OtherCondition.DoesNotExist:
+			raise Http404
+
+	def get(self, request, pk, format=None):
+		other_conditions = OtherCondition.objects.filter(patient__pk=pk)
+		serializer = OtherConditionSerializer(other_conditions, many=True)
+		return Response(serializer.data)
+
+	def post(self, request, format=None):
+		serializer = OtherConditionSerializer(data=request.DATA)
+		if serializer.is_valid():
+			serializer.save()
+			return Response(serializer.data, status=status.HTTP_201_CREATED)
+		return Response(serializer.errors, status=status.HTTP_404_BAD_REQUEST)
+
 
 search_form = SearchForm()
 condition_form = ConditionForm()
@@ -122,6 +146,7 @@ def home(request, user_id):
 				})
 	return render_to_response('facility/home.html', variables)
 
+@login_required(login_url='/')
 def patient_details(request, patient_id):
 	patient =get_object_or_404(Patient, pk=patient_id)
 	variables=RequestContext(request, {
@@ -188,6 +213,8 @@ def search_page(request):
     search_form = SearchForm()
     patient=None
     patient_obj=None
+    fac = None
+    conditions= None
     if request.GET.has_key('query'):
         show_results = True
         query = request.GET['query'].strip().upper()
@@ -196,39 +223,60 @@ def search_page(request):
             patient = \
             Patient.objects.filter(identifier__iexact=query)
             if list(patient) == []:
-            	patient_obj=_get_patient_data_from_alternate_facility(query)
-            	print patient_obj
+            	patient_obj, msg, fac, conditions =_get_patient_data_from_alternate_facility(query)
+            	if patient_obj == None:
+            		messages.error(request, msg)
+            	else:
+            		messages.info(request, msg)
+
     variables = RequestContext(request, { 'search_form': search_form,
         'found_patient': patient,
         'patient_obj': patient_obj,
         'show_results': show_results,
         'form': form,
-        'condition_form': condition_form
+        'condition_form': condition_form,
+        'fac':fac,
+        'conditions':conditions,
+        'OtherConditionForm': OtherConditionForm()
     })
     return render_to_response('facility/home.html', variables)
 
 def _get_patient_data_from_alternate_facility(query):
 	r = None
+	obj = None
 	urls = {'MBA':'http://127.0.0.1:8080/api/patient/detail/', 'MUL':'http://127.0.0.1:8001/api/patient/detail/'}
+	urls_other_conditions = {}
+	msg= None
+	fac = None
+	conditions = None
 	key = query.strip()[:3].upper()
 	if urls.has_key(key):
 		url = urls[key]
 		url=url+query
 		try:
 			r = requests.get(url)
+			if not r:
+				msg = "Sorry the patient was not found."
 		except (ConnectionError, HTTPError, Timeout), e:
-			print e
+			print e, "\n\n"
+			msg = "Sorry there was a problem in the connection. Try Again later..."
 		if r:
 			stream = BytesIO(r.text)
-			print r.text
 			try:
-				data = JSONParser().parse(stream)
-				print data
+				data = JSONParser().parse(stream)	
 			except Exception, e:
 				raise e
-			serializer = PatientSerializer(data=data)
+			serializer = PatientSerializer(data=data, partial=True)
 			if serializer.is_valid():
-				return serializer.object
+				obj = serializer.object
+				fac = data['facility_registered_from']
+				conditions = data['conditions']
+				msg = "Patient information was found at  %s" % str(fac.capitalize())
+				
+
+	else:
+		msg = "Sorry the facility with the input search is not available."
+	return (obj, msg, fac, conditions)
 
 @login_required(login_url='/')
 def update_patient_data(request, patient_id):
@@ -252,3 +300,6 @@ def update_patient_data(request, patient_id):
 				})
 	return render_to_response('facility/home.html', variables)	
 	
+def update_patient_data_from_alternate_facility(request, patient_id):
+	if request.method=='POST':
+		pass

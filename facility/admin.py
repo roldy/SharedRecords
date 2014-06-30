@@ -4,7 +4,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
-from facility.models import Facility, Personnel, Condition, Patient
+from facility.models import Facility, Personnel, Condition, Patient, OtherCondition
 
 
 class PersonnelCreationForm(forms.ModelForm):
@@ -113,6 +113,7 @@ admin.site.register(Facility, FacilityAdmin)
 admin.site.register(Personnel, PersonnelAdmin)
 admin.site.register(Condition, ConditionAdmin)
 admin.site.register(Patient, PatientAdmin)
+admin.site.register(OtherCondition)
 
 # unregister the Group model from admin.
 admin.site.unregister(Group)

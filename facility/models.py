@@ -13,7 +13,7 @@ class Facility(models.Model):
 	"""
 	 This class defines the details about a health facility
 	"""	
-	name = models.CharField(max_length=50, primary_key=True)
+	name = models.CharField(max_length=50, unique=True)
 	address = models.CharField(max_length=50)
 	district = models.CharField(max_length=50)
 	town = models.CharField(max_length=50)
@@ -141,7 +141,7 @@ class Personnel(AbstractBaseUser):
 		return self.email
 
 class Condition(models.Model):
-	condition_name = models.CharField(max_length=80, primary_key=True)
+	condition_name = models.CharField(max_length=80, unique=True)
 	symptoms = models.TextField()
 	diagnosis = models.TextField()
 	prescription = models.TextField()
@@ -174,7 +174,22 @@ class Patient(models.Model):
 
 	def save(self, *args, **kwargs):
 		if self.facility_registered_from:
-			first_three_facility_letters=self.facility_registered_from.name
-			self.identifier = first_three_facility_letters.strip()[:3].upper()+"-"+str(random.randrange(1, 999, 3))+\
-			"-"+str(random.randrange(1, 999, 3))
+			if self.identifier=="":
+				first_three_facility_letters=self.facility_registered_from.name
+				self.identifier = first_three_facility_letters.strip()[:3].upper()+"-"+str(random.randrange(1, 999, 3))+\
+				"-"+str(random.randrange(1, 999, 3))
 		super(Patient, self).save(*args, **kwargs)
+
+class OtherCondition(models.Model):
+	patient = models.ForeignKey(Patient)
+	facility = models.CharField(max_length=255)
+	name = models.CharField(max_length=255)
+	symptoms = models.TextField()
+	prescription = models.TextField()
+	doctor_name = models.CharField(max_length=255)
+	doctor_email=models.EmailField()
+	date_of_visit = models.DateField()
+	next_visit = models.DateField()
+
+	def __unicode__(self):
+		return self.name

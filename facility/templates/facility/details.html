@@ -1,6 +1,6 @@
 <div class="panel panel-default panel-info details-render" >
   <!-- Default panel contents -->
-  <div class="panel-heading"><h1><center>Patient details</center></h1></div>
+  <div class="panel-heading"><h3><center><span class="glyphicon glyphicon-th"></span> Patient details</center></h3></div>
   <div class="panel-body">
   <div  class="table-responsive">
   	<table class="table table-bordered table-striped">
@@ -65,7 +65,7 @@
 </div>
 
 <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" id="patientConditionModal">
-	  <div class="modal-dialog modal-sm">
+	  <div class="modal-dialog">
 	  <div class="modal-content">
 	  	<div class="modal-header">
 	    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
@@ -73,11 +73,38 @@
 	  </div>
 	  <div class="message"></div>
 	  <div class="modal-body">
-	  	    <ul>
-     		 {% for condition in patient_details.conditions.all %}
-          	<li>{{condition|capfirst}}</li>
-          	{% endfor%}
-        </ul>
+        <div class="panel-group" id="accordion">
+            {% for condition in patient_details.conditions.all %}
+            <div class="panel panel-default">
+              <div class="panel-heading">
+              <center>
+                <h6 class="panel-title">
+                  <a data-toggle="collapse" data-parent="#accordion" href="#collpase{{forloop.counter}}">
+                    {{condition.condition_name|capfirst}}
+                  </a>
+                </h6>
+              </center>
+              </div>
+              <div id="collpase{{forloop.counter}}" class="panel-collapse collapse">
+                <div class="panel-body">
+                  <ul class="list-group">
+                    <li class="list-group-item"><b> Symptoms :</b> {{condition.symptoms}}</li>
+                    <li class="list-group-item"><b>Diagnosis :</b> {{condition.diagnosis}}</li>
+                    <li class="list-group-item"><b>Prescription :</b> {{condition.prescription}}</li>
+                  </ul>
+                  <center><b>Doctors</b></center>
+                  <ul class="list-group">
+                  {% for doc in condition.condition_doctors.all %}
+                    <li class="list-group-item"><b>Full name:</b> {{doc.first_name}} {{doc.last_name}}</li>
+                     <li class="list-group-item"><b>Email:</b>  {{doc.email}} </li> 
+                     <p></p>
+                  {% endfor%}
+                  </ul>
+                </div>
+              </div>
+            </div>
+            {% endfor%}
+          </div>
 	  </div>
     </div>
   </div>

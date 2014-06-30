@@ -1,5 +1,5 @@
 <div class="panel panel-default panel-info details-render" >
- <div class="panel-heading"><h1><center>Patients</center></h1></div>
+ <div class="panel-heading"><h3><center><span class="glyphicon glyphicon-th-list"></span>  Patients</center></h3></div>
  <div class="panel-body">
 
 
@@ -36,7 +36,7 @@
 		{% if patients_list.has_previous %}
 			<li class="previous"><a href="?page={{patients_list.previous_page_number}}">&larr;previous</a></li>
 		{% endif %}
-		<span class="current">
+		<span class="label label-default">
 			Page {{patients_list.number}} of {{ patients_list.paginator.num_pages }}
 		</span>
 		{% if patients_list.has_next %}

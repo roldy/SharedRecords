@@ -40,3 +40,6 @@ class SearchForm(forms.Form):
 			'class': 'form-control', 
 			'placeholder': 'Search Patient...'})
 		)
+
+class OtherConditionForm(forms.Form):
+	conditions = forms.ModelMultipleChoiceField(queryset=Condition.objects.all())

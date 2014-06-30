@@ -1,6 +1,11 @@
-<h1 class="page-header">Patient Found</h1>
-{% for patient in found_patient%}
+<div class="panel panel-default panel-success details-render" >
+	 <div class="panel-heading"><center><h3>Patient found</h3></center></div>
+	 <div class="panel-body">
 
-	<h3><a href="{% url 'facility:update' patient.id %}"> {{ patient.full_name }}</a></h3>
+	{% for patient in found_patient%}
 
-{% endfor %}
+		<h3><a href="{% url 'facility:details' patient.id %}"> {{ patient.full_name }}</a></h3>
+
+	{% endfor %}
+	</div>
+</div>

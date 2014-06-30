@@ -1,4 +1,111 @@
-<h1 class="page-header">Patient Found in {{ patient_obj.facility_registered_from }}</h1>
-<h3><a href="#"> {{ patient_obj.full_name }}</a></h3>
+<div class="panel panel-default panel-info details-render" >
+  <!-- Default panel contents -->
+  <div class="panel-heading"><h3><center><center><span class="glyphicon glyphicon-th"></span> Patient details</center></h3></div>
+  <div class="panel-body">
+  <div  class="table-responsive">
+  	<table class="table table-bordered table-striped">
+  		<tbody>
+        <tr>
+          <th>Identifier</th>
+          <td><code>{{patient_obj.identifier}}</code></td>
+        </tr>
+        <tr>
+          <th>Full name</th>
+          <td><a href="#">{{patient_obj.full_name}}</a></td>
+        </tr>
+        <tr>
+          <th>First name</th>
+          <td>{{patient_obj.first_name}}</td>
+          
+        </tr>
+        <tr>
+          <th>Last name</th>
+          <td>{{patient_obj.last_name}}</td>
+        </tr>
+        <tr>
+          <th>Sex</th>
+          <td>{{patient_obj.sex}}</td>
+        </tr>
+        <tr>
+          <th>Date of birth</th>
+          <td>{{patient_obj.date_of_birth}}</td>
+        </tr>
+        <tr>
+          <th>Address</th>
+          <td>{{patient_obj.address}}</td>
+        </tr>
+        <tr>
+          <th>Contact</th>
+          <td>{{patient_obj.contact}}</td>
+        </tr>
+        <tr>
+          <th>Next of kin</th>
+          <td>{{patient_obj.next_of_kin}}</td>
+        </tr>
+        <tr>
+          <th>Registered Facility</th>
+          <td>{{fac}}</td>
+        </tr>
+        <tr>
+          <th>Conditions</th>
+          <td><a href="#patientConditionModal" data-toggle="modal">conditions</a></td>
+        </tr>
+        <tr>
+          <th>Visitation date</th>
+          <td>{{patient_obj.vistation_date}}</td>
+        </tr>
+        <tr>
+          <th>Next visit</th>
+          <td>{{patient_obj.next_visit}}</td>
+        </tr>
+      </tbody>
+  	</table>
+  </div>	
+  </div>
+</div>
 
-			
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" id="patientConditionModal">
+	  <div class="modal-dialog">
+	  <div class="modal-content">
+	  	<div class="modal-header">
+	    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+	    <h4 class="modal-title" id="myModalLabel">{{patient_obj.full_name|capfirst}}'s Condition(s)</h4>
+	  </div>
+	  <div class="message"></div>
+	  <div class="modal-body">
+       		 <div class="panel-group" id="accordion">
+       		 	{% for condition in conditions %}
+       		 	<div class="panel panel-default">
+       		 		<div class="panel-heading">
+       		 		<center>
+       		 			<h6 class="panel-title">
+       		 				<a data-toggle="collapse" data-parent="#accordion" href="#collpase{{forloop.counter}}">
+       		 					{{condition.condition_name|capfirst}}
+       		 				</a>
+       		 			</h6>
+       		 		</center>
+       		 		</div>
+       		 		<div id="collpase{{forloop.counter}}" class="panel-collapse collapse">
+       		 			<div class="panel-body">
+       		 				<ul class="list-group">
+       		 					<li class="list-group-item"><b> Symptoms :</b> {{condition.symptoms}}</li>
+       		 					<li class="list-group-item"><b>Diagnosis :</b> {{condition.diagnosis}}</li>
+       		 					<li class="list-group-item"><b>Prescription :</b> {{condition.prescription}}</li>
+       		 				</ul>
+       		 				<center><b>Doctors</b></center>
+       		 				<ul class="list-group">
+       		 				{% for doc in condition.condition_doctors%}
+       		 				  <li class="list-group-item"><b>Full name:</b>	{{doc.first_name}} {{doc.last_name}}</li>
+       		 				   <li class="list-group-item"><b>Email:</b>	{{doc.email}} </li> 
+       		 				   <p></p>
+       		 				{% endfor%}
+       		 				</ul>
+       		 			</div>
+       		 		</div>
+       		 	</div>
+       		 	{% endfor%}
+       		 </div>
+	  </div>
+    </div>
+  </div>
+</div>
