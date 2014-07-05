@@ -11,7 +11,7 @@
         </tr>
         <tr>
           <th>Full name</th>
-          <td><a href="#">{{patient_obj.full_name}}</a></td>
+          <td><a href="#addConditionModal" data-toggle="modal">{{patient_obj.full_name}}</a></td>
         </tr>
         <tr>
           <th>First name</th>
@@ -44,7 +44,7 @@
         </tr>
         <tr>
           <th>Registered Facility</th>
-          <td>{{fac}}</td>
+          <td>{{fac|capfirst}}</td>
         </tr>
         <tr>
           <th>Conditions</th>
@@ -69,7 +69,7 @@
 	  <div class="modal-content">
 	  	<div class="modal-header">
 	    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-	    <h4 class="modal-title" id="myModalLabel">{{patient_obj.full_name|capfirst}}'s Condition(s)</h4>
+	    <h4 class="modal-title" id="myModalLabel"><span class="glyphicon glyphicon-user"></span> {{patient_obj.full_name|capfirst}}'s Condition(s)</h4>
 	  </div>
 	  <div class="message"></div>
 	  <div class="modal-body">
@@ -80,7 +80,7 @@
        		 		<center>
        		 			<h6 class="panel-title">
        		 				<a data-toggle="collapse" data-parent="#accordion" href="#collpase{{forloop.counter}}">
-       		 					{{condition.condition_name|capfirst}}
+       		 					{{condition.condition_name|capfirst}} &nbsp; <small>({{fac|capfirst}})</small>
        		 				</a>
        		 			</h6>
        		 		</center>
@@ -104,8 +104,76 @@
        		 		</div>
        		 	</div>
        		 	{% endfor%}
+
+            {% if other_conditions %}
+            {% for condition in other_conditions %}
+            <div class="panel panel-default">
+              <div class="panel-heading">
+              <center>
+                <h6 class="panel-title">
+                  <a data-toggle="collapse" data-parent="#accordion" href="#other_collpase{{forloop.counter}}">
+                    {{condition.name|capfirst}} &nbsp; <small>({{condition.facility|capfirst}})</small>
+                  </a>
+                </h6>
+              </center>
+              </div>
+              <div id="other_collpase{{forloop.counter}}" class="panel-collapse collapse">
+                <div class="panel-body">
+                  <ul class="list-group">
+                    <li class="list-group-item"><b> Symptoms :</b> {{condition.symptoms}}</li>
+                    <li class="list-group-item"><b>Diagnosis :</b> {{condition.diagnosis}}</li>
+                    <li class="list-group-item"><b>Prescription :</b> {{condition.prescription}}</li>
+                    <li class="list-group-item"><b>Date of Visit :</b> {{condition.date_of_visit}}</li>
+                    <li class="list-group-item"><b>Next visit :</b> {{condition.next_visit}}</li>
+                  </ul>
+                  <center><b>Doctors</b></center>
+                  <ul class="list-group">
+                    <li class="list-group-item"><b>Full name:</b> {{condition.doctor_name}} {{doc.last_name}}</li>
+                     <li class="list-group-item"><b>Email:</b>  {{condition.doctor_email}} </li> 
+                     <p></p>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            {% endfor%}
+            {% endif%}
        		 </div>
 	  </div>
     </div>
   </div>
 </div>
+
+
+
+<!-- Modal -->
+      <div class="modal fade" id="addConditionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+              <h4 class="modal-title" id="myModalLabel">Add Patient Condition</h4>
+            </div>
+            <div class="message"></div>
+            <div class="modal-body" id="conditionDiv">
+              <form action="{% url 'facility:other_condition' patient_id %}" method="post"  class="form-horizontal home-form" role="form" id="conditionForm">
+                {% csrf_token %}
+                {{ other_condition_form.as_table }}
+          
+            <div id="loading" style="display:none;">
+                <span id="load_text">loading...</span>
+            </div>
+            <div id="form_ajax" style="display:none;">
+                <span>Condition was successfully added.</span>
+            </div>
+            <div id="form_ajax_error" style="display:none;">
+                <span>Can not submit data due to errors.</span>
+            </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Save Condition</button>
+              </form> 
+            </div>
+          </div>
+      </div>
+    </div>

@@ -1,7 +1,7 @@
 <div {% if form %} class="panel panel-success details-render" {% elif update_form %} class="panel panel-warning details-render"{% endif %} >
 	<div class="panel-heading"><center>{% if form %}<h3> <span class="glyphicon glyphicon-book"></span> Create Patient</h3>{% elif update_form%}<h3><span class="glyphicon glyphicon-file"></span> Update Patient</h3>{% endif %}</center></div>
 	<div class="panel-body">
-		<form enctype="multipart/form-data"  {% if form %} action="{% url 'facility:add_patient' %}" {% elif update_form %}  action="{% url 'facility:update' patient_id %}" {% endif %} method="post"  class="form-horizontal home-form" role="form">
+		<form enctype="multipart/form-data"  {% if form %} action="{% url 'facility:add_patient' %}"  id="add_patient_form" {% elif update_form %}  action="{% url 'facility:update' patient_id %}" {% endif %} method="post"  class="form-horizontal home-form" role="form">
 		        {% csrf_token %}
 		        {% if form %}
 		        	{{ form.as_p }}

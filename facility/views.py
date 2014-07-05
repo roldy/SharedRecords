@@ -96,6 +96,9 @@ search_form = SearchForm()
 condition_form = ConditionForm()
 form = PatientForm()
 
+# urls dictionary that holds urls to connected facilities
+urls = {'MBA':'http://127.0.0.1:8080/api/patient/', 'MUL':'http://127.0.0.1:8001/api/patient/'}
+
 def index(request):
 	if request.user.is_authenticated():
 			return HttpResponseRedirect(reverse('facility:home',  args=(request.user.id,)))
@@ -215,6 +218,8 @@ def search_page(request):
     patient_obj=None
     fac = None
     conditions= None
+    other_conditions= None
+    patient_id = None
     if request.GET.has_key('query'):
         show_results = True
         query = request.GET['query'].strip().upper()
@@ -223,7 +228,7 @@ def search_page(request):
             patient = \
             Patient.objects.filter(identifier__iexact=query)
             if list(patient) == []:
-            	patient_obj, msg, fac, conditions =_get_patient_data_from_alternate_facility(query)
+            	patient_obj, msg, fac, conditions, other_conditions, patient_id=_get_patient_data_from_alternate_facility(query)
             	if patient_obj == None:
             		messages.error(request, msg)
             	else:
@@ -237,22 +242,25 @@ def search_page(request):
         'condition_form': condition_form,
         'fac':fac,
         'conditions':conditions,
-        'OtherConditionForm': OtherConditionForm()
+        'other_conditions': other_conditions,
+        'patient_id': patient_id,
+        'other_condition_form': OtherConditionForm()
     })
     return render_to_response('facility/home.html', variables)
 
 def _get_patient_data_from_alternate_facility(query):
 	r = None
 	obj = None
-	urls = {'MBA':'http://127.0.0.1:8080/api/patient/detail/', 'MUL':'http://127.0.0.1:8001/api/patient/detail/'}
-	urls_other_conditions = {}
 	msg= None
 	fac = None
+	c_msg = None
 	conditions = None
+	other_conditions = None
+	patient_id = None
 	key = query.strip()[:3].upper()
 	if urls.has_key(key):
-		url = urls[key]
-		url=url+query
+		raw_url = urls[key]
+		url=raw_url+'detail/'+query
 		try:
 			r = requests.get(url)
 			if not r:
@@ -272,11 +280,31 @@ def _get_patient_data_from_alternate_facility(query):
 				fac = data['facility_registered_from']
 				conditions = data['conditions']
 				msg = "Patient information was found at  %s" % str(fac.capitalize())
+				patient_id = data['id']
+				other_conditions_url = raw_url+'conditions/'+str(patient_id)
+				other_conditions, c_msg = _get_other_conditions(other_conditions_url)
 				
 
 	else:
 		msg = "Sorry the facility with the input search is not available."
-	return (obj, msg, fac, conditions)
+	return (obj, msg, fac, conditions, other_conditions, patient_id)
+
+def _get_other_conditions(url):
+	c_msg = None
+	try:
+		r = requests.get(url)
+		if not r:
+			c_msg = "Sorry the patient was not found."
+	except (ConnectionError, HTTPError, Timeout), e:
+		print e, "\n\n"
+		c_msg = "Sorry there was a problem in the connection. Try Again later..."
+	if r:
+		stream = BytesIO(r.text)
+		try:
+			data = JSONParser().parse(stream)	
+		except Exception, e:
+			raise e
+	return (data, c_msg)
 
 @login_required(login_url='/')
 def update_patient_data(request, patient_id):
@@ -300,6 +328,6 @@ def update_patient_data(request, patient_id):
 				})
 	return render_to_response('facility/home.html', variables)	
 	
-def update_patient_data_from_alternate_facility(request, patient_id):
+def add_patient_data_from_alternate_facility(request, patient_id):
 	if request.method=='POST':
 		pass

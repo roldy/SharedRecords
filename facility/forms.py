@@ -43,3 +43,9 @@ class SearchForm(forms.Form):
 
 class OtherConditionForm(forms.Form):
 	conditions = forms.ModelMultipleChoiceField(queryset=Condition.objects.all())
+
+
+	def __init__(self, *args, **kwargs):
+		super(OtherConditionForm, self).__init__(*args, **kwargs)
+		for field in self.fields:
+			self.fields[field].widget.attrs.update({'class':'form-control input-sm'})
