@@ -107,7 +107,7 @@ class Personnel(AbstractBaseUser):
 
 	def _get_full_name(self):
 		"Returns personnel's full name"
-		return '%s, %s' % (self.first_name, self.last_name)
+		return '%s %s' % (self.first_name, self.last_name)
 	full_name = property(_get_full_name)
 
 	def get_full_name(self):
@@ -185,6 +185,7 @@ class OtherCondition(models.Model):
 	facility = models.CharField(max_length=255)
 	name = models.CharField(max_length=255)
 	symptoms = models.TextField()
+	diagnosis = models.TextField()
 	prescription = models.TextField()
 	doctor_name = models.CharField(max_length=255)
 	doctor_email=models.EmailField()

@@ -1,15 +1,18 @@
 from django.forms import ModelForm
 from django import forms
 
-from facility.models import Patient, Condition
+from facility.models import Patient, Condition, Facility
 
+from functools import partial 
+
+
+
+DateInput = partial(forms.DateInput, {'class': 'datepicker'})
 class PatientForm(ModelForm):
+
+	facility_registered_from = forms.ModelChoiceField(queryset=Facility.objects.all(),widget=forms.HiddenInput())
 	class Meta:
-		error_css_class = 'errorlist'
-		required_css_class = 'errorlist'
 		model = Patient
-		fields = ('first_name', 'last_name', 'sex', 'date_of_birth', 'address', 'contact', 'next_of_kin', 
-		 			'conditions', 'facility_registered_from', 'vistation_date', 'next_visit' )
 		exclude = ('identifier',)
 		help_texts = {
 			'date_of_birth': ('Please use the following format: <em>YYYY-MM-DD</em>',),
@@ -43,9 +46,12 @@ class SearchForm(forms.Form):
 
 class OtherConditionForm(forms.Form):
 	conditions = forms.ModelMultipleChoiceField(queryset=Condition.objects.all())
-
+	date_of_visit = forms.DateField(help_text='Please use the following format: <em>YYYY-MM-DD</em>')
+	next_visit = forms.DateField(help_text='Please use the following format: <em>YYYY-MM-DD</em>')
+	patient_identifier = forms.CharField(widget=forms.HiddenInput())
 
 	def __init__(self, *args, **kwargs):
 		super(OtherConditionForm, self).__init__(*args, **kwargs)
 		for field in self.fields:
 			self.fields[field].widget.attrs.update({'class':'form-control input-sm'})
+		

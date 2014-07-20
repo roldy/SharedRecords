@@ -41,4 +41,5 @@ $(document).ready(function() {
             };
 
             $('#conditionForm').ajaxForm(options);
+            $('#otherConditionForm').ajaxForm(options);
         });

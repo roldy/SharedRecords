@@ -1,13 +1,17 @@
-body {
-  padding-top: 40px;
-  padding-bottom: 40px;
-  background: url("../img/facility-background.jpg") no-repeat center center fixed;
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
-  background-color: #eee;
+@media (min-device-width :  768px){
+
+    body {
+      padding-top: 40px;
+      padding-bottom: 40px;
+      background: url("../img/facility-background.jpg") no-repeat center center fixed;
+      -webkit-background-size: cover;
+      -moz-background-size: cover;
+      -o-background-size: cover;
+      background-size: cover;
+      background-color: #eee;
+    }
 }
+
 
 h5 {
   padding-top: 40px;
@@ -52,3 +56,4 @@ h5 {
   text-align: center;
   background-color: transparent;
 }
+

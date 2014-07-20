@@ -108,12 +108,16 @@ class PatientAdmin(admin.ModelAdmin):
 		('Visitation', {'fields':('vistation_date', 'next_visit')}),
 	)
 
+class OtherConditionAdmin(admin.ModelAdmin):
+	list_display = ('patient', 'id',  'facility', 'name', 'symptoms', 'prescription')
+	list_filter = ('patient',)
+
 
 admin.site.register(Facility, FacilityAdmin)
 admin.site.register(Personnel, PersonnelAdmin)
 admin.site.register(Condition, ConditionAdmin)
 admin.site.register(Patient, PatientAdmin)
-admin.site.register(OtherCondition)
+admin.site.register(OtherCondition, OtherConditionAdmin)
 
 # unregister the Group model from admin.
 admin.site.unregister(Group)

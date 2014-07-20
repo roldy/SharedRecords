@@ -15,11 +15,17 @@
 
         <script src="{% static 'facility/dist/js/jquery.min.js' %}" type="text/javascript"></script>
         <script src="{% static 'facility/dist/js/jquery.form.min.js' %}" type="text/javascript"></script>
+        <script src="{% static 'facility/dist/js/jquery-ui.js' %}" type="text/javascript"></script>
         
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $('.datepicker').datepicker();
+            });
+        
+        </script>
         <style>
-            #form_ajax_error, .errorlist {
-                color: red;
-            }
+            #form_ajax_error, .errorlist { color: red; }
+            #form_ajax{ color: green;}
         </style>
 
         
@@ -41,7 +47,6 @@
             <div id="footer" class="navbar-fixed-bottom">
                 <div class="container">                    
                     <p class="text-muted credit">
-                       &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
                        <small class=" pull-right">&copy; Developed by <a href="https://github.com/roldy" target="_blank">Roldy</a></small>
                 </div>
             </div>

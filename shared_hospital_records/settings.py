@@ -128,7 +128,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'public', 'media')
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
 MEDIA_URL = '/media/'
 
-TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
+TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'facility/templates')]
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
