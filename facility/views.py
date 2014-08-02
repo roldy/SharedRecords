@@ -103,10 +103,12 @@ class OtherConditionDetail(APIView):
 search_form = SearchForm()
 condition_form = ConditionForm()
 form = PatientForm()
+facility = Facility.objects.get(pk=1)
+
 
 # urls dictionary that holds urls to connected facilities
-urls = {'MBA':'http://127.0.0.1:8080/api/patient/', 'GUL':'http://127.0.0.1:8080/api/patient/',
- 'MUL':'http://127.0.0.1:8080/api/patient/'}
+urls = {'MUK':'http://10.42.0.1:8000/api/patient/', 'GUL':'http://127.0.0.1:8080/api/patient/', 'MUN':'http://10.10.0.237:8000/api/patient',
+ 'MUL':'http://10.42.0.54:8000/api/patient/', 'GUL': 'http://127.0.0.1:8080/api/patient/'}
 
 def index(request):
 	if request.user.is_authenticated():
@@ -198,7 +200,7 @@ def add_condition(request):
 
 @login_required(login_url='/')
 def add_patient(request):
-	facility = Facility.objects.get(pk=1)
+	
 	form = PatientForm(initial={'facility_registered_from': facility.id })
 	if request.method=='POST':
 		form = PatientForm(request.POST)
@@ -222,7 +224,7 @@ def add_patient(request):
 @login_required(login_url='/')
 def search_page(request):
     show_results = False
-    form = PatientForm()
+    form = PatientForm(initial={'facility_registered_from': facility.id })
     search_form = SearchForm()
     patient=None
     patient_obj=None
@@ -275,6 +277,7 @@ def _get_patient_data_from_alternate_facility(query):
 		url=raw_url+'detail/'+query
 		try:
 			r = requests.get(url)
+			print r
 			if not r:
 				msg = "Sorry the patient was not found."
 		except (ConnectionError, HTTPError, Timeout), e:
@@ -284,6 +287,7 @@ def _get_patient_data_from_alternate_facility(query):
 			stream = BytesIO(r.text)
 			try:
 				data = JSONParser().parse(stream)	
+				
 			except Exception, e:
 				raise e
 			serializer = PatientSerializer(data=data, partial=True)
@@ -331,7 +335,7 @@ def update_patient_data(request, patient_id):
 		messages.error(request, 'Please correct the errors and try again')
 	
 	variables = RequestContext(request, {'user': request.user, 
-				'update_form': PatientForm(instance=patient), 
+				'update_form': PatientForm(instance=patient, initial={'facility_registered_from': facility.id }), 
 				'search_form': search_form,
 				'condition_form': ConditionForm(),
 				'patient_id':patient.id
@@ -383,6 +387,7 @@ def add_patient_data_from_alternate_facility(request, patient_id):
 						e = other_condition_form.errors[error]
 						errors_dict[error] = unicode(e)
 				return HttpResponseBadRequest(json.dumps(errors_dict))
+	
 			
 
 def _post_alternate_patient_data(patient_identifier, conditions_list):

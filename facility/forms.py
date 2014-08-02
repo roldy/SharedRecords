@@ -54,4 +54,12 @@ class OtherConditionForm(forms.Form):
 		super(OtherConditionForm, self).__init__(*args, **kwargs)
 		for field in self.fields:
 			self.fields[field].widget.attrs.update({'class':'form-control input-sm'})
+
+	def clean_next_visit(self):
+		visit_date = self.cleaned_data['date_of_visit']
+		nextv_date = self.cleaned_data['next_visit']
+
+		if nextv_date < visit_date:
+			raise forms.ValidationError("The next visit cannot be before the current date of visit")
 		
+		return nextv_date
